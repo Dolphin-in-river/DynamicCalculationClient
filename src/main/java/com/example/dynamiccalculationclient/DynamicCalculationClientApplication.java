@@ -1,22 +1,9 @@
 package com.example.dynamiccalculationclient;
 
-//import org.springframework.boot.SpringApplication;
-//import org.springframework.boot.autoconfigure.SpringBootApplication;
-//
-//@SpringBootApplication
-//public class DynamicCalculationClientApplication {
-//
-//    public static void main(String[] args) {
-//        SpringApplication.run(DynamicCalculationClientApplication.class, args);
-//    }
-//
-//}
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,10 +12,11 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class DynamicCalculationClientApplication {
     public static void main(String[] args) throws Exception {
@@ -61,19 +49,16 @@ public class DynamicCalculationClientApplication {
     private static String configureRequest(String requestBody) {
         try {
             String responseString = "";
-            String outputString = "";
+            StringBuilder outputString = new StringBuilder();
             String wsEndPoint = "http://localhost:8090/ws";
             URL url = new URL(wsEndPoint);
             HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            String xmlInput = requestBody;
-            byte[] buffer = xmlInput.getBytes();
+            byte[] buffer = requestBody.getBytes();
             bout.write(buffer);
             byte[] b = bout.toByteArray();
-            String SOAPAction = "getUserDetails";
             httpConn.setRequestProperty("Content-Length", String.valueOf(b.length));
             httpConn.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
-            httpConn.setRequestProperty("SOAPAction", SOAPAction);
             httpConn.setRequestMethod("POST");
             httpConn.setDoOutput(true);
             httpConn.setDoInput(true);
@@ -89,16 +74,16 @@ public class DynamicCalculationClientApplication {
                 } else {
                     inputStream = httpConn.getInputStream();
                 }
-                InputStreamReader isr = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+                InputStreamReader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                 BufferedReader in = new BufferedReader(isr);
                 while ((responseString = in.readLine()) != null) {
-                    outputString = outputString + responseString;
+                    outputString.append(responseString);
                 }
             } catch (IOException e) {
-                outputString = "Error: " + e.getMessage();
+                outputString = new StringBuilder("Error: " + e.getMessage());
             }
 
-            return outputString;
+            return outputString.toString();
         } catch (Exception e) {
             return e.getMessage();
         }
