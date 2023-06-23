@@ -20,7 +20,7 @@ import java.util.Scanner;
 
 public class DynamicCalculationClientApplication {
     public static void main(String[] args) throws Exception {
-        String s = "Введите значение (0 для завершения, 1 для отправки сохранения формулы, 2 для получения формулы по id): ";
+        String s = "Введите значение (0 для завершения, 1 для отправки запроса на сохранение формулы, 2 для получения формулы по id): ";
         System.out.print(s);
         Scanner scanner = new Scanner(System.in);
         short inputType = scanner.nextShort();
@@ -28,7 +28,7 @@ public class DynamicCalculationClientApplication {
             if (inputType != 1 && inputType != 2) {
                 System.out.println("Данное значение не поддерживается");
             } else {
-                System.out.print("Введите формулу: ");
+                System.out.print("Введите число/id: ");
                 String str = scanner.next();
                 String formattedSOAPResponse = formatXML(sendRequest(inputType, str));
                 System.out.println(formattedSOAPResponse);
@@ -37,7 +37,6 @@ public class DynamicCalculationClientApplication {
             inputType = scanner.nextShort();
         }
     }
-
 
     private static String sendRequest(short type, String parameter) throws Exception {
         if (type == 1) {
